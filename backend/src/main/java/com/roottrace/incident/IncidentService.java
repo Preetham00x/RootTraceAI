@@ -180,11 +180,15 @@ public class IncidentService {
     }
 
     private void validateStatusTransition(IncidentStatus current, IncidentStatus target) {
-        if (current == IncidentStatus.CLOSED) {
-            throw new BadRequestException("Cannot change status of a closed incident");
-        }
-        if (current == IncidentStatus.RESOLVED && target == IncidentStatus.OPEN) {
-            throw new BadRequestException("Cannot reopen a resolved incident directly; close or re-investigate");
+        switch (current) {
+            case CLOSED -> throw new BadRequestException("Cannot change status of a closed incident");
+            case RESOLVED -> {
+                if (target == IncidentStatus.OPEN) {
+                    throw new BadRequestException(
+                            "Cannot reopen a resolved incident directly; close or re-investigate");
+                }
+            }
+            case OPEN, INVESTIGATING -> { /* any transition allowed */ }
         }
     }
 

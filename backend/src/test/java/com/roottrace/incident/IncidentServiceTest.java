@@ -240,8 +240,12 @@ class IncidentServiceTest {
         incident.setStatus(IncidentStatus.OPEN);
         incident.setEnvironment(request.environment());
         incident.setCreatedBy(request.createdBy());
-        // Simulate @PrePersist
+        // Simulate JPA lifecycle: set ID (normally done by DB) and timestamps (@PrePersist)
         try {
+            var idField = Incident.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(incident, UUID.randomUUID());
+
             var method = Incident.class.getDeclaredMethod("onCreate");
             method.setAccessible(true);
             method.invoke(incident);

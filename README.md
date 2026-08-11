@@ -10,7 +10,7 @@ RootTraceAI helps software engineers investigate production incidents by correla
 
 | Layer          | Technology                                                    |
 |----------------|---------------------------------------------------------------|
-| Backend        | Java 21, Spring Boot 3.5, Spring Security, Spring Data JPA   |
+| Backend        | Java 21, Spring Boot 3.4.1, Spring Security, Spring Data JPA  |
 | AI             | Spring AI, Google Gemini, RAG, pgvector                       |
 | Database       | PostgreSQL 16 + pgvector                                      |
 | Frontend       | React, TypeScript                                             |
@@ -22,7 +22,7 @@ RootTraceAI helps software engineers investigate production incidents by correla
 
 - Java 21+
 - Maven 3.9+
-- Docker & Docker Compose
+- **Docker Desktop** (REQUIRED for local development database with `pgvector`)
 
 ### 1. Start PostgreSQL
 
