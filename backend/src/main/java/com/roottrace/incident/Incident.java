@@ -71,7 +71,7 @@ public class Incident {
     @Column(name = "embedding")
     private float[] embedding;
 
-    protected Incident() {
+    public Incident() {
         // JPA
     }
 

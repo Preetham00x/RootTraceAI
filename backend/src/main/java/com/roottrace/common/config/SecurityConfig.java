@@ -40,6 +40,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/refresh",
+                                "/api/integrations/prometheus/webhook",
+                                "/api/integrations/grafana/webhook",
+                                "/api/integrations/slack/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
