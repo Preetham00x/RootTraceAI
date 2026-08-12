@@ -35,6 +35,7 @@ com.roottrace
 │   └── config/        — JPA, CORS, and shared configuration
 ├── incident/          — Incident CRUD, DTOs, domain logic
 ├── user/              — Users, roles, authentication (Phase 2)
+├── ai/                — AI infrastructure, abstractions, and health (Phase 3)
 ├── knowledge/         — Document upload, chunking, embeddings (Phase 3)
 ├── search/            — Hybrid search, RRF (Phase 4)
 ├── investigation/     — AI diagnosis, investigation plans (Phase 5-6)

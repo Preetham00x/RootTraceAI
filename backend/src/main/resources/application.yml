@@ -2,7 +2,32 @@ spring:
   application:
     name: roottrace
 
+  ai:
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY:}
+        chat:
+          options:
+            model: gemini-2.5-flash
+        embedding:
+          options:
+            model: text-embedding-004
+
 app:
+  ai:
+    diagnosis:
+      max-context-chunks: 8
+    retrieval:
+      top-k: 10
+      semantic-top-k: 20
+      keyword-top-k: 20
+      rrf-k: 60
+      min-score: 0.0
+    ingestion:
+      chunk-size: 1200
+      chunk-overlap: 150
+      max-document-size: 10485760
+
   security:
     jwt:
       secret: ${JWT_SECRET:dGhpc2lzYWRlZmF1bHRzZWNyZXRrZXl0aGF0c2hvdWxkYmVhdGxlYXN0MjU2Yml0c2xvbmc=}

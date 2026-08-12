@@ -1,5 +1,7 @@
 package com.roottrace.incident;
 
+import com.roottrace.ai.diagnosis.SimilarIncidentService;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.roottrace.incident.dto.CreatorResponse;
 import com.roottrace.incident.dto.CreateIncidentRequest;
@@ -48,6 +50,9 @@ class IncidentControllerTest {
 
     @MockitoBean
     private IncidentService incidentService;
+
+    @MockitoBean
+    private SimilarIncidentService similarIncidentService;
 
     @MockitoBean
     private JwtService jwtService;

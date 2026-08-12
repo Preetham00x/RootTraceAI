@@ -74,11 +74,11 @@ RootTraceAI/
 
 | Phase  | Description                  | Status       |
 |--------|------------------------------|--------------|
-| 1      | Foundation + Incident CRUD   | In Progress  |
-| 2      | Authentication & RBAC        | Planned      |
-| 3      | Knowledge Base + Embeddings  | Planned      |
-| 4      | Hybrid Search                | Planned      |
-| 5      | AI Diagnosis                 | Planned      |
+| 1      | Foundation + Incident CRUD   | Complete     |
+| 2      | Authentication & RBAC        | Complete     |
+| 3      | AI Infrastructure & RAG      | Complete     |
+| 4      | Hybrid Search                | Complete     |
+| 5      | AI Diagnosis                 | Complete     |
 | 6      | Advanced Investigation       | Planned      |
 | 7      | Integrations                 | Planned      |
 | 8      | Agentic Investigation        | Planned      |

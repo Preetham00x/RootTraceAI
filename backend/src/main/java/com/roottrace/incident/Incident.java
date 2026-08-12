@@ -14,6 +14,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.FetchType;
 import com.roottrace.user.User;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -64,6 +66,10 @@ public class Incident {
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Column(name = "embedding")
+    private float[] embedding;
 
     protected Incident() {
         // JPA
@@ -180,5 +186,13 @@ public class Incident {
 
     public boolean isDeleted() {
         return deletedAt != null;
+    }
+
+    public float[] getEmbedding() {
+        return embedding;
+    }
+
+    public void setEmbedding(float[] embedding) {
+        this.embedding = embedding;
     }
 }

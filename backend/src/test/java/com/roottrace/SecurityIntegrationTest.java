@@ -23,11 +23,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import com.roottrace.ai.embedding.AiEmbeddingService;
+import com.roottrace.ai.chat.AiChatService;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class SecurityIntegrationTest {
 
+    @MockitoBean
+    private AiEmbeddingService aiEmbeddingService;
+
+    @MockitoBean
+    private AiChatService aiChatService;
     @Autowired
     private MockMvc mockMvc;
 

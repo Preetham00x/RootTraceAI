@@ -1,5 +1,10 @@
 package com.roottrace.common.exception;
 
+import com.roottrace.ai.diagnosis.DiagnosisException;
+import com.roottrace.ai.diagnosis.InsufficientEvidenceException;
+import com.roottrace.ai.exception.AiServiceException;
+import com.roottrace.ai.exception.AiUnavailableException;
+import com.roottrace.knowledge.retrieval.RetrievalException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +22,71 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(RetrievalException.class)
+    public ResponseEntity<ErrorResponse> handleRetrieval(RetrievalException ex,
+                                                         HttpServletRequest request) {
+        log.error("Retrieval pipeline failed: {}", ex.getMessage());
+        ErrorResponse body = ErrorResponse.of(
+                HttpStatus.BAD_GATEWAY.value(),
+                "Bad Gateway",
+                "Knowledge retrieval failed. Please try again later.",
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(body);
+    }
+
+    @ExceptionHandler(DiagnosisException.class)
+    public ResponseEntity<ErrorResponse> handleDiagnosis(DiagnosisException ex,
+                                                          HttpServletRequest request) {
+        log.error("AI diagnosis pipeline failed: {}", ex.getMessage());
+        ErrorResponse body = ErrorResponse.of(
+                HttpStatus.BAD_GATEWAY.value(),
+                "Bad Gateway",
+                "AI diagnosis failed. Please try again later.",
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(body);
+    }
+
+    @ExceptionHandler(InsufficientEvidenceException.class)
+    public ResponseEntity<ErrorResponse> handleInsufficientEvidence(InsufficientEvidenceException ex,
+                                                                     HttpServletRequest request) {
+        log.warn("Insufficient evidence for diagnosis: {}", ex.getMessage());
+        ErrorResponse body = ErrorResponse.of(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                "Unprocessable Entity",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
+    }
+
+    @ExceptionHandler(AiUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handleAiUnavailable(AiUnavailableException ex,
+                                                              HttpServletRequest request) {
+        log.error("AI service unavailable: {}", ex.getMessage());
+        ErrorResponse body = ErrorResponse.of(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                "Service Unavailable",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(body);
+    }
+
+    @ExceptionHandler(AiServiceException.class)
+    public ResponseEntity<ErrorResponse> handleAiService(AiServiceException ex,
+                                                          HttpServletRequest request) {
+        log.error("AI service error: {}", ex.getMessage());
+        ErrorResponse body = ErrorResponse.of(
+                HttpStatus.BAD_GATEWAY.value(),
+                "Bad Gateway",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(body);
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex,

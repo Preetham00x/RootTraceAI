@@ -1,9 +1,11 @@
 package com.roottrace.incident;
 
+import com.roottrace.ai.diagnosis.SimilarIncidentService;
 import com.roottrace.incident.dto.CreateIncidentRequest;
 import com.roottrace.incident.dto.IncidentResponse;
 import com.roottrace.incident.dto.IncidentSummaryResponse;
 import com.roottrace.incident.dto.ResolveIncidentRequest;
+import com.roottrace.incident.dto.SimilarIncidentResponse;
 import com.roottrace.incident.dto.UpdateIncidentRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,9 +36,12 @@ import java.util.UUID;
 public class IncidentController {
 
     private final IncidentService incidentService;
+    private final SimilarIncidentService similarIncidentService;
 
-    public IncidentController(IncidentService incidentService) {
+    public IncidentController(IncidentService incidentService,
+                              SimilarIncidentService similarIncidentService) {
         this.incidentService = incidentService;
+        this.similarIncidentService = similarIncidentService;
     }
 
     @PostMapping
@@ -98,5 +103,14 @@ public class IncidentController {
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         incidentService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/similar")
+    @Operation(summary = "Find similar incidents using AI vector search")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENGINEER', 'VIEWER')")
+    public ResponseEntity<java.util.List<SimilarIncidentResponse>> getSimilar(
+            @PathVariable UUID id,
+            @RequestParam(required = false, defaultValue = "5") Integer limit) {
+        return ResponseEntity.ok(similarIncidentService.findSimilar(id, limit));
     }
 }
