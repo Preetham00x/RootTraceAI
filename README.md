@@ -82,7 +82,7 @@ RootTraceAI/
 | 6      | Advanced Investigation       | Complete     |
 | 7      | Integrations                 | Planned      |
 | 8      | Agentic Investigation        | Planned      |
-| 9      | Postmortems + AI Evaluation  | Planned      |
+| 9      | Postmortems + AI Evaluation  | Complete     |
 | 10     | Frontend                     | Planned      |
 | 11     | Docker + Observability       | Planned      |
 
