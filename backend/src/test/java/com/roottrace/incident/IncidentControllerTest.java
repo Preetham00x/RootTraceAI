@@ -1,6 +1,7 @@
 package com.roottrace.incident;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.roottrace.incident.dto.CreatorResponse;
 import com.roottrace.incident.dto.CreateIncidentRequest;
 import com.roottrace.incident.dto.IncidentResponse;
 import com.roottrace.incident.dto.IncidentSummaryResponse;
@@ -16,6 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import com.roottrace.common.security.JwtService;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.time.Instant;
 import java.util.List;
@@ -33,7 +37,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(IncidentController.class)
+@WebMvcTest(controllers = IncidentController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
 class IncidentControllerTest {
 
     @Autowired
@@ -45,6 +49,12 @@ class IncidentControllerTest {
     @MockitoBean
     private IncidentService incidentService;
 
+    @MockitoBean
+    private JwtService jwtService;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
     private static final UUID INCIDENT_ID = UUID.randomUUID();
     private static final Instant NOW = Instant.now();
 
@@ -53,12 +63,13 @@ class IncidentControllerTest {
     void shouldCreateIncident() throws Exception {
         CreateIncidentRequest request = new CreateIncidentRequest(
                 "DB connection timeout", "Pool exhausted", "payment-service",
-                IncidentSeverity.HIGH, "production", "engineer@test.com");
+                IncidentSeverity.HIGH, "production");
 
+        CreatorResponse creator = new CreatorResponse(UUID.randomUUID(), "engineer@test.com");
         IncidentResponse response = new IncidentResponse(
                 INCIDENT_ID, "DB connection timeout", "Pool exhausted", "payment-service",
                 IncidentSeverity.HIGH, IncidentStatus.OPEN, "production",
-                "engineer@test.com", NOW, NOW, null, null);
+                creator, NOW, NOW, null, null);
 
         when(incidentService.create(any(CreateIncidentRequest.class))).thenReturn(response);
 
@@ -76,7 +87,7 @@ class IncidentControllerTest {
     @DisplayName("POST /api/incidents — 422 with missing required fields")
     void shouldRejectInvalidCreate() throws Exception {
         CreateIncidentRequest request = new CreateIncidentRequest(
-                "", null, "", null, null, "");
+                "", null, "", null, null);
 
         mockMvc.perform(post("/api/incidents")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -89,10 +100,11 @@ class IncidentControllerTest {
     @Test
     @DisplayName("GET /api/incidents/{id} — 200 OK")
     void shouldGetIncidentById() throws Exception {
+        CreatorResponse creator = new CreatorResponse(UUID.randomUUID(), "user@test.com");
         IncidentResponse response = new IncidentResponse(
                 INCIDENT_ID, "Test incident", "Description", "api-gateway",
                 IncidentSeverity.MEDIUM, IncidentStatus.OPEN, "staging",
-                "user@test.com", NOW, NOW, null, null);
+                creator, NOW, NOW, null, null);
 
         when(incidentService.getById(INCIDENT_ID)).thenReturn(response);
 
@@ -105,10 +117,11 @@ class IncidentControllerTest {
     @Test
     @DisplayName("GET /api/incidents — 200 OK with pagination")
     void shouldListIncidents() throws Exception {
+        CreatorResponse creator = new CreatorResponse(UUID.randomUUID(), "user@test.com");
         IncidentSummaryResponse summary = new IncidentSummaryResponse(
                 INCIDENT_ID, "Test incident", "api-gateway",
                 IncidentSeverity.MEDIUM, IncidentStatus.OPEN, "production",
-                "user@test.com", NOW);
+                creator, NOW);
 
         Page<IncidentSummaryResponse> page = new PageImpl<>(List.of(summary));
         when(incidentService.list(any(Pageable.class), any(), any(), any(), any(), any(), any()))
@@ -129,10 +142,11 @@ class IncidentControllerTest {
         UpdateIncidentRequest request = new UpdateIncidentRequest(
                 "Updated title", null, null, IncidentSeverity.CRITICAL, null, null);
 
+        CreatorResponse creator = new CreatorResponse(UUID.randomUUID(), "engineer@test.com");
         IncidentResponse response = new IncidentResponse(
                 INCIDENT_ID, "Updated title", "Description", "payment-service",
                 IncidentSeverity.CRITICAL, IncidentStatus.OPEN, "production",
-                "engineer@test.com", NOW, NOW, null, null);
+                creator, NOW, NOW, null, null);
 
         when(incidentService.update(eq(INCIDENT_ID), any(UpdateIncidentRequest.class)))
                 .thenReturn(response);
@@ -150,10 +164,11 @@ class IncidentControllerTest {
     void shouldResolveIncident() throws Exception {
         ResolveIncidentRequest request = new ResolveIncidentRequest("Increased pool size");
 
+        CreatorResponse creator = new CreatorResponse(UUID.randomUUID(), "engineer@test.com");
         IncidentResponse response = new IncidentResponse(
                 INCIDENT_ID, "DB timeout", "Desc", "payment-service",
                 IncidentSeverity.HIGH, IncidentStatus.RESOLVED, "production",
-                "engineer@test.com", NOW, NOW, NOW, "Increased pool size");
+                creator, NOW, NOW, NOW, "Increased pool size");
 
         when(incidentService.resolve(eq(INCIDENT_ID), eq("Increased pool size")))
                 .thenReturn(response);
@@ -180,10 +195,11 @@ class IncidentControllerTest {
     @Test
     @DisplayName("PATCH /api/incidents/{id}/close — 200 OK")
     void shouldCloseIncident() throws Exception {
+        CreatorResponse creator = new CreatorResponse(UUID.randomUUID(), "engineer@test.com");
         IncidentResponse response = new IncidentResponse(
                 INCIDENT_ID, "DB timeout", "Desc", "payment-service",
                 IncidentSeverity.HIGH, IncidentStatus.CLOSED, "production",
-                "engineer@test.com", NOW, NOW, NOW, "Fixed");
+                creator, NOW, NOW, NOW, "Fixed");
 
         when(incidentService.close(INCIDENT_ID)).thenReturn(response);
 

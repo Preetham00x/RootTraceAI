@@ -1,6 +1,7 @@
 package com.roottrace.incident;
 
 import com.roottrace.incident.dto.CreateIncidentRequest;
+import com.roottrace.incident.dto.CreatorResponse;
 import com.roottrace.incident.dto.IncidentResponse;
 import com.roottrace.incident.dto.IncidentSummaryResponse;
 
@@ -21,7 +22,6 @@ final class IncidentMapper {
         incident.setSeverity(request.severity());
         incident.setStatus(IncidentStatus.OPEN);
         incident.setEnvironment(request.environment());
-        incident.setCreatedBy(request.createdBy());
         return incident;
     }
 
@@ -34,7 +34,7 @@ final class IncidentMapper {
                 incident.getSeverity(),
                 incident.getStatus(),
                 incident.getEnvironment(),
-                incident.getCreatedBy(),
+                new CreatorResponse(incident.getCreatedBy().getId(), incident.getCreatedBy().getDisplayName()),
                 incident.getCreatedAt(),
                 incident.getUpdatedAt(),
                 incident.getResolvedAt(),
@@ -50,7 +50,7 @@ final class IncidentMapper {
                 incident.getSeverity(),
                 incident.getStatus(),
                 incident.getEnvironment(),
-                incident.getCreatedBy(),
+                new CreatorResponse(incident.getCreatedBy().getId(), incident.getCreatedBy().getDisplayName()),
                 incident.getCreatedAt()
         );
     }

@@ -2,6 +2,13 @@ spring:
   application:
     name: roottrace
 
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:dGhpc2lzYWRlZmF1bHRzZWNyZXRrZXl0aGF0c2hvdWxkYmVhdGxlYXN0MjU2Yml0c2xvbmc=}
+      access-token-expiration-ms: 900000 # 15 minutes
+      refresh-token-expiration-ms: 604800000 # 7 days
+
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:roottrace}
     username: ${POSTGRES_USER:roottrace}

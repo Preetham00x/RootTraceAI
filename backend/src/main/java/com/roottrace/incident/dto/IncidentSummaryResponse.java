@@ -13,7 +13,7 @@ public record IncidentSummaryResponse(
         IncidentSeverity severity,
         IncidentStatus status,
         String environment,
-        String createdBy,
+        CreatorResponse createdBy,
         Instant createdAt
 ) {
 }

@@ -14,7 +14,7 @@ public record IncidentResponse(
         IncidentSeverity severity,
         IncidentStatus status,
         String environment,
-        String createdBy,
+        CreatorResponse createdBy,
         Instant createdAt,
         Instant updatedAt,
         Instant resolvedAt,

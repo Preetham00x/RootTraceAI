@@ -12,6 +12,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import com.roottrace.user.Role;
+import com.roottrace.user.User;
+import com.roottrace.common.security.CurrentUserService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -38,10 +41,14 @@ class IncidentServiceTest {
     @Mock
     private AuditService auditService;
 
+    @Mock
+    private CurrentUserService currentUserService;
+
     @InjectMocks
     private IncidentService incidentService;
 
     private CreateIncidentRequest validCreateRequest;
+    private User mockUser;
 
     @BeforeEach
     void setUp() {
@@ -50,9 +57,15 @@ class IncidentServiceTest {
                 "Users experiencing 503 errors due to connection pool exhaustion",
                 "payment-service",
                 IncidentSeverity.HIGH,
-                "production",
-                "engineer@example.com"
+                "production"
         );
+        mockUser = new User("engineer@example.com", "hash", "Eng", "Ineer", Role.ENGINEER);
+        // Simulate ID
+        try {
+            var idField = User.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(mockUser, UUID.randomUUID());
+        } catch (Exception e) {}
     }
 
     @Nested
@@ -62,6 +75,7 @@ class IncidentServiceTest {
         @Test
         @DisplayName("should create incident with OPEN status")
         void shouldCreateIncident() {
+            when(currentUserService.getCurrentUser()).thenReturn(mockUser);
             Incident saved = createIncidentEntity(validCreateRequest);
             when(incidentRepository.save(any(Incident.class))).thenReturn(saved);
 
@@ -117,6 +131,7 @@ class IncidentServiceTest {
         @Test
         @DisplayName("should update only provided fields")
         void shouldUpdatePartially() {
+            when(currentUserService.getCurrentUser()).thenReturn(mockUser);
             UUID id = UUID.randomUUID();
             Incident incident = createIncidentEntity(validCreateRequest);
             when(incidentRepository.findByIdAndNotDeleted(id)).thenReturn(Optional.of(incident));
@@ -144,6 +159,7 @@ class IncidentServiceTest {
         @Test
         @DisplayName("should resolve an open incident")
         void shouldResolveOpenIncident() {
+            when(currentUserService.getCurrentUser()).thenReturn(mockUser);
             UUID id = UUID.randomUUID();
             Incident incident = createIncidentEntity(validCreateRequest);
             when(incidentRepository.findByIdAndNotDeleted(id)).thenReturn(Optional.of(incident));
@@ -180,6 +196,7 @@ class IncidentServiceTest {
         @Test
         @DisplayName("should close a resolved incident")
         void shouldCloseResolvedIncident() {
+            when(currentUserService.getCurrentUser()).thenReturn(mockUser);
             UUID id = UUID.randomUUID();
             Incident incident = createIncidentEntity(validCreateRequest);
             incident.setStatus(IncidentStatus.RESOLVED);
@@ -214,6 +231,7 @@ class IncidentServiceTest {
         @Test
         @DisplayName("should soft-delete an incident")
         void shouldSoftDelete() {
+            when(currentUserService.getCurrentUser()).thenReturn(mockUser);
             UUID id = UUID.randomUUID();
             Incident incident = createIncidentEntity(validCreateRequest);
             when(incidentRepository.findByIdAndNotDeleted(id)).thenReturn(Optional.of(incident));
@@ -239,7 +257,7 @@ class IncidentServiceTest {
         incident.setSeverity(request.severity());
         incident.setStatus(IncidentStatus.OPEN);
         incident.setEnvironment(request.environment());
-        incident.setCreatedBy(request.createdBy());
+        incident.setCreatedBy(mockUser);
         // Simulate JPA lifecycle: set ID (normally done by DB) and timestamps (@PrePersist)
         try {
             var idField = Incident.class.getDeclaredField("id");

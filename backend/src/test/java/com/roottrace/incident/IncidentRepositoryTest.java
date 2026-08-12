@@ -1,5 +1,9 @@
 package com.roottrace.incident;
 
+import com.roottrace.user.Role;
+import com.roottrace.user.User;
+import com.roottrace.user.UserRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,9 +29,17 @@ class IncidentRepositoryTest {
     @Autowired
     private IncidentRepository incidentRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    private User testUser;
+
     @BeforeEach
     void setUp() {
         incidentRepository.deleteAll();
+        userRepository.deleteAll();
+        testUser = new User("test@test.com", "hash", "Test", "User", Role.ENGINEER);
+        testUser = userRepository.save(testUser);
     }
 
     @Test
@@ -165,7 +177,7 @@ class IncidentRepositoryTest {
         incident.setSeverity(severity);
         incident.setStatus(status);
         incident.setEnvironment("test");
-        incident.setCreatedBy("test-user");
+        incident.setCreatedBy(testUser);
         return incident;
     }
 }

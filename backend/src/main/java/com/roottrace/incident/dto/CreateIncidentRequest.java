@@ -22,10 +22,6 @@ public record CreateIncidentRequest(
         IncidentSeverity severity,
 
         @Size(max = 100, message = "Environment must not exceed 100 characters")
-        String environment,
-
-        @NotBlank(message = "Created by is required")
-        @Size(max = 255, message = "Created by must not exceed 255 characters")
-        String createdBy
+        String environment
 ) {
 }

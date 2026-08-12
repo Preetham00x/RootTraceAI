@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,6 +41,7 @@ public class IncidentController {
 
     @PostMapping
     @Operation(summary = "Create a new incident")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENGINEER')")
     public ResponseEntity<IncidentResponse> create(@Valid @RequestBody CreateIncidentRequest request) {
         IncidentResponse response = incidentService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -69,6 +71,7 @@ public class IncidentController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an incident")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENGINEER')")
     public ResponseEntity<IncidentResponse> update(@PathVariable UUID id,
                                                     @Valid @RequestBody UpdateIncidentRequest request) {
         return ResponseEntity.ok(incidentService.update(id, request));
@@ -76,6 +79,7 @@ public class IncidentController {
 
     @PatchMapping("/{id}/resolve")
     @Operation(summary = "Resolve an incident with a resolution description")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENGINEER')")
     public ResponseEntity<IncidentResponse> resolve(@PathVariable UUID id,
                                                      @Valid @RequestBody ResolveIncidentRequest request) {
         return ResponseEntity.ok(incidentService.resolve(id, request.resolution()));
@@ -83,12 +87,14 @@ public class IncidentController {
 
     @PatchMapping("/{id}/close")
     @Operation(summary = "Close a resolved incident")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENGINEER')")
     public ResponseEntity<IncidentResponse> close(@PathVariable UUID id) {
         return ResponseEntity.ok(incidentService.close(id));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Soft-delete an incident")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENGINEER')")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         incidentService.delete(id);
         return ResponseEntity.noContent().build();

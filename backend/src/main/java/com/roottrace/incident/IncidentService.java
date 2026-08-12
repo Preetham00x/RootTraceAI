@@ -28,22 +28,25 @@ public class IncidentService {
 
     private final IncidentRepository incidentRepository;
     private final AuditService auditService;
+    private final com.roottrace.common.security.CurrentUserService currentUserService;
 
-    public IncidentService(IncidentRepository incidentRepository, AuditService auditService) {
+    public IncidentService(IncidentRepository incidentRepository, AuditService auditService, com.roottrace.common.security.CurrentUserService currentUserService) {
         this.incidentRepository = incidentRepository;
         this.auditService = auditService;
+        this.currentUserService = currentUserService;
     }
 
     @Transactional
     public IncidentResponse create(CreateIncidentRequest request) {
         Incident incident = IncidentMapper.toEntity(request);
+        incident.setCreatedBy(currentUserService.getCurrentUser());
         incident = incidentRepository.save(incident);
 
         auditService.record(
                 AuditEventType.INCIDENT_CREATED,
                 ENTITY_TYPE,
                 incident.getId().toString(),
-                request.createdBy(),
+                currentUserService.getCurrentUser().getEmail(),
                 String.format("Incident created: %s [%s]", request.title(), request.severity())
         );
 
@@ -99,7 +102,7 @@ public class IncidentService {
                 AuditEventType.INCIDENT_UPDATED,
                 ENTITY_TYPE,
                 id.toString(),
-                incident.getCreatedBy(),
+                currentUserService.getCurrentUser().getEmail(),
                 "Incident updated"
         );
 
@@ -124,7 +127,7 @@ public class IncidentService {
                 AuditEventType.INCIDENT_RESOLVED,
                 ENTITY_TYPE,
                 id.toString(),
-                incident.getCreatedBy(),
+                currentUserService.getCurrentUser().getEmail(),
                 "Incident resolved: " + truncate(resolution, 200)
         );
 
@@ -147,7 +150,7 @@ public class IncidentService {
                 AuditEventType.INCIDENT_CLOSED,
                 ENTITY_TYPE,
                 id.toString(),
-                incident.getCreatedBy(),
+                currentUserService.getCurrentUser().getEmail(),
                 "Incident closed"
         );
 
@@ -165,7 +168,7 @@ public class IncidentService {
                 AuditEventType.INCIDENT_DELETED,
                 ENTITY_TYPE,
                 id.toString(),
-                incident.getCreatedBy(),
+                currentUserService.getCurrentUser().getEmail(),
                 "Incident soft-deleted"
         );
 
