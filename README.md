@@ -79,7 +79,7 @@ RootTraceAI/
 | 3      | AI Infrastructure & RAG      | Complete     |
 | 4      | Hybrid Search                | Complete     |
 | 5      | AI Diagnosis                 | Complete     |
-| 6      | Advanced Investigation       | Planned      |
+| 6      | Advanced Investigation       | Complete     |
 | 7      | Integrations                 | Planned      |
 | 8      | Agentic Investigation        | Planned      |
 | 9      | Postmortems + AI Evaluation  | Planned      |
