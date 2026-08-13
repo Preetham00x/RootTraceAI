@@ -7,12 +7,15 @@ import com.roottrace.integration.dto.SlackResponse;
 import com.roottrace.integration.dto.WebhookIngestionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
 
 @RestController
 @RequestMapping("/api/integrations")
@@ -23,6 +26,12 @@ public class WebhookController {
     private final GrafanaWebhookService grafanaWebhookService;
     private final SlackService slackService;
 
+    @Value("${webhooks.security.enabled:false}")
+    private boolean securityEnabled;
+
+    @Value("${webhooks.security.secret:}")
+    private String webhookSecret;
+
     public WebhookController(
             PrometheusWebhookService prometheusWebhookService,
             GrafanaWebhookService grafanaWebhookService,
@@ -32,24 +41,41 @@ public class WebhookController {
         this.slackService = slackService;
     }
 
+    private boolean isAuthorized(String secret) {
+        if (!securityEnabled) return true;
+        return webhookSecret != null && webhookSecret.equals(secret);
+    }
+
     @PostMapping("/prometheus/webhook")
     @Operation(summary = "Ingest alert webhook from Prometheus Alertmanager")
-    public ResponseEntity<WebhookIngestionResponse> ingestPrometheusAlert(
-            @RequestBody PrometheusAlertPayload payload) {
+    public ResponseEntity<?> ingestPrometheusAlert(
+            @RequestBody PrometheusAlertPayload payload,
+            @RequestHeader(value = "X-Webhook-Secret", required = false) String secret) {
+        if (!isAuthorized(secret)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         return ResponseEntity.ok(prometheusWebhookService.processPrometheusWebhook(payload));
     }
 
     @PostMapping("/grafana/webhook")
     @Operation(summary = "Ingest alert webhook from Grafana Alerting")
-    public ResponseEntity<WebhookIngestionResponse> ingestGrafanaAlert(
-            @RequestBody GrafanaAlertPayload payload) {
+    public ResponseEntity<?> ingestGrafanaAlert(
+            @RequestBody GrafanaAlertPayload payload,
+            @RequestHeader(value = "X-Webhook-Secret", required = false) String secret) {
+        if (!isAuthorized(secret)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         return ResponseEntity.ok(grafanaWebhookService.processGrafanaWebhook(payload));
     }
 
     @PostMapping(value = "/slack/events", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Handle incoming Slack slash commands")
-    public ResponseEntity<SlackResponse> handleSlackCommand(
-            @RequestBody SlackCommandRequest request) {
+    public ResponseEntity<?> handleSlackCommand(
+            @RequestBody SlackCommandRequest request,
+            @RequestHeader(value = "X-Webhook-Secret", required = false) String secret) {
+        if (!isAuthorized(secret)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         return ResponseEntity.ok(slackService.handleSlackCommand(request));
     }
 }

@@ -11,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -31,7 +33,8 @@ public class AiDiagnosisEvidence {
     @JoinColumn(name = "chunk_id", nullable = false)
     private KnowledgeChunk chunk;
 
-    @Column(name = "relevance_score")
+    @JdbcTypeCode(SqlTypes.NUMERIC)
+    @Column(name = "relevance_score", columnDefinition = "numeric(5, 4)")
     private Double relevanceScore;
 
     @Column(columnDefinition = "TEXT")

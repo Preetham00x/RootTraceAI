@@ -40,7 +40,8 @@ public class AiDiagnosis {
     @Column(name = "probable_root_cause", nullable = false, columnDefinition = "TEXT")
     private String probableRootCause;
 
-    @Column(nullable = false)
+    @JdbcTypeCode(SqlTypes.NUMERIC)
+    @Column(nullable = false, columnDefinition = "numeric(4, 3)")
     private Double confidence;
 
     @JdbcTypeCode(SqlTypes.JSON)

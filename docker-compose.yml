@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     image: pgvector/pgvector:pg16
@@ -18,6 +16,44 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: roottrace-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB:-roottrace}
+      - POSTGRES_USER=${POSTGRES_USER:-roottrace}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - JWT_SECRET=${JWT_SECRET:-dGhpc2lzYWRlZmF1bHRzZWNyZXRrZXl0aGF0c2hvdWxkYmVhdGxlYXN0MjU2Yml0c2xvbmc=}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - SPRING_AI_MODEL_CHAT=${GEMINI_API_KEY:+google-genai}
+      - SPRING_AI_MODEL_EMBEDDING_TEXT=${GEMINI_API_KEY:+google-genai}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - WEBHOOK_SECURITY_ENABLED=${WEBHOOK_SECURITY_ENABLED:-false}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+    container_name: roottrace-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:

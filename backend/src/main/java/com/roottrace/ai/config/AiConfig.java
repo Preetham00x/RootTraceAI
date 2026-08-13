@@ -29,6 +29,22 @@ public class AiConfig {
     }
 
     @Bean
+    @org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean(AiEmbeddingService.class)
+    public AiEmbeddingService fallbackAiEmbeddingService() {
+        return new AiEmbeddingService() {
+            @Override
+            public float[] embed(String text) {
+                throw new com.roottrace.ai.exception.AiUnavailableException("Embedding model is unavailable. Please configure GEMINI_API_KEY.");
+            }
+
+            @Override
+            public java.util.List<float[]> embedAll(java.util.List<String> texts) {
+                throw new com.roottrace.ai.exception.AiUnavailableException("Embedding model is unavailable. Please configure GEMINI_API_KEY.");
+            }
+        };
+    }
+
+    @Bean
     @ConditionalOnBean(ChatModel.class)
     public ChatClient chatClient(ChatModel chatModel) {
         return ChatClient.builder(chatModel).build();
