@@ -38,8 +38,17 @@ export const incidentsApi = {
     environment?: string;
     search?: string;
   }): Promise<PageResponse<IncidentSummary>> => {
-    const response = await apiClient.get<PageResponse<IncidentSummary>>('/api/incidents', { params });
-    return response.data;
+    const response = await apiClient.get<any>('/api/incidents', { params });
+    const data = response.data;
+    if (data && Array.isArray(data.content)) {
+      data.content = data.content.map((inc: any) => ({
+        ...inc,
+        createdBy: typeof inc.createdBy === 'object' && inc.createdBy !== null
+          ? (inc.createdBy.name || `${inc.createdBy.firstName || ''} ${inc.createdBy.lastName || ''}`.trim() || inc.createdBy.email || 'System')
+          : String(inc.createdBy || 'System'),
+      }));
+    }
+    return data;
   },
 
   getIncident: async (id: string): Promise<Incident> => {

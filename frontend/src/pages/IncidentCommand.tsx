@@ -309,7 +309,7 @@ export const IncidentCommandView: React.FC = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                    Confidence Score: <strong style={{ color: 'var(--accent-cyan)' }}>{(latestDiagnosis.confidenceScore * 100).toFixed(0)}%</strong>
+                    Confidence Score: <strong style={{ color: 'var(--accent-cyan)' }}>{(((latestDiagnosis.confidenceScore ?? 0)) * 100).toFixed(0)}%</strong>
                   </div>
                   {/* Feedback rating */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -480,10 +480,10 @@ export const IncidentCommandView: React.FC = () => {
                       <Badge value={s.status} />
                     </div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                      Compliance: <strong>{s.currentCompliance.toFixed(2)}%</strong> (Target: {s.targetPercentage}%)
+                      Compliance: <strong>{(s.currentCompliance ?? 0).toFixed(2)}%</strong> (Target: {s.targetPercentage}%)
                     </div>
                     <div style={{ fontSize: '11px', color: '#fca5a5', marginTop: '2px' }}>
-                      Error budget consumed: {s.budgetConsumedPercentage.toFixed(1)}% • Burn rate: {s.burnRateMultiplier.toFixed(1)}x
+                      Error budget consumed: {(s.budgetConsumedPercentage ?? 0).toFixed(1)}% • Burn rate: {(s.burnRateMultiplier ?? 0).toFixed(1)}x
                     </div>
                   </div>
                 ))}
@@ -516,7 +516,7 @@ export const IncidentCommandView: React.FC = () => {
                         {rel.title}
                       </span>
                       <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--accent-primary)' }}>
-                        {(rel.similarityScore * 100).toFixed(0)}% Match
+                        {(((rel.similarityScore ?? 0)) * 100).toFixed(0)}% Match
                       </span>
                     </div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>

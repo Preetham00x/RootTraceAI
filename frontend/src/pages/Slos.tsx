@@ -197,13 +197,13 @@ export const Slos: React.FC = () => {
                   <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-card-elevated)', borderRadius: 'var(--radius-sm)' }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Target SLO</div>
                     <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', marginTop: '2px' }}>
-                      {slo.targetPercentage.toFixed(3)}%
+                      {(slo.targetPercentage ?? 99.9).toFixed(3)}%
                     </div>
                   </div>
                   <div style={{ padding: '10px 12px', backgroundColor: 'var(--bg-card-elevated)', borderRadius: 'var(--radius-sm)' }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Current Compliance</div>
-                    <div style={{ fontSize: '18px', fontWeight: 700, color: slo.compliancePercentage < slo.targetPercentage ? '#fca5a5' : 'var(--status-healthy)', marginTop: '2px' }}>
-                      {slo.compliancePercentage.toFixed(3)}%
+                    <div style={{ fontSize: '18px', fontWeight: 700, color: (slo.compliancePercentage ?? 100) < (slo.targetPercentage ?? 99.9) ? '#fca5a5' : 'var(--status-healthy)', marginTop: '2px' }}>
+                      {(slo.compliancePercentage ?? 100).toFixed(3)}%
                     </div>
                   </div>
                 </div>
@@ -212,19 +212,19 @@ export const Slos: React.FC = () => {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', marginBottom: '6px' }}>
                     <span style={{ color: 'var(--text-secondary)' }}>Error Budget Consumed:</span>
-                    <strong style={{ color: slo.budgetConsumedPercentage > 75 ? '#fca5a5' : 'var(--text-main)' }}>
-                      {slo.budgetConsumedPercentage.toFixed(1)}% ({slo.errorBudgetRemainingPercentage.toFixed(1)}% remaining)
+                    <strong style={{ color: (slo.budgetConsumedPercentage ?? 0) > 75 ? '#fca5a5' : 'var(--text-main)' }}>
+                      {(slo.budgetConsumedPercentage ?? 0).toFixed(1)}% ({(slo.errorBudgetRemainingPercentage ?? 100).toFixed(1)}% remaining)
                     </strong>
                   </div>
                   <div className="progress-bar-container" style={{ height: '8px' }}>
                     <div
                       className="progress-bar-fill"
                       style={{
-                        width: `${Math.min(100, slo.budgetConsumedPercentage)}%`,
+                        width: `${Math.min(100, slo.budgetConsumedPercentage ?? 0)}%`,
                         backgroundColor:
-                          slo.budgetConsumedPercentage > 75
+                          (slo.budgetConsumedPercentage ?? 0) > 75
                             ? 'var(--status-critical)'
-                            : slo.budgetConsumedPercentage > 50
+                            : (slo.budgetConsumedPercentage ?? 0) > 50
                             ? 'var(--status-warning)'
                             : 'var(--status-healthy)',
                       }}
@@ -240,26 +240,26 @@ export const Slos: React.FC = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', textAlign: 'center' }}>
                     <div style={{ padding: '6px', backgroundColor: 'var(--bg-card-elevated)', borderRadius: 'var(--radius-sm)' }}>
                       <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>1h Window</div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: slo.burnRate1h > 2 ? '#fca5a5' : 'var(--text-main)' }}>
-                        {slo.burnRate1h.toFixed(1)}x
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: (slo.burnRate1h ?? 0) > 2 ? '#fca5a5' : 'var(--text-main)' }}>
+                        {(slo.burnRate1h ?? 0).toFixed(1)}x
                       </div>
                     </div>
                     <div style={{ padding: '6px', backgroundColor: 'var(--bg-card-elevated)', borderRadius: 'var(--radius-sm)' }}>
                       <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>6h Window</div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: slo.burnRate6h > 2 ? '#fca5a5' : 'var(--text-main)' }}>
-                        {slo.burnRate6h.toFixed(1)}x
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: (slo.burnRate6h ?? 0) > 2 ? '#fca5a5' : 'var(--text-main)' }}>
+                        {(slo.burnRate6h ?? 0).toFixed(1)}x
                       </div>
                     </div>
                     <div style={{ padding: '6px', backgroundColor: 'var(--bg-card-elevated)', borderRadius: 'var(--radius-sm)' }}>
                       <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>24h Window</div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: slo.burnRate24h > 2 ? '#fca5a5' : 'var(--text-main)' }}>
-                        {slo.burnRate24h.toFixed(1)}x
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: (slo.burnRate24h ?? 0) > 2 ? '#fca5a5' : 'var(--text-main)' }}>
+                        {(slo.burnRate24h ?? 0).toFixed(1)}x
                       </div>
                     </div>
                     <div style={{ padding: '6px', backgroundColor: 'var(--bg-card-elevated)', borderRadius: 'var(--radius-sm)' }}>
                       <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>3d Window</div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: slo.burnRate3d > 2 ? '#fca5a5' : 'var(--text-main)' }}>
-                        {slo.burnRate3d.toFixed(1)}x
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: (slo.burnRate3d ?? 0) > 2 ? '#fca5a5' : 'var(--text-main)' }}>
+                        {(slo.burnRate3d ?? 0).toFixed(1)}x
                       </div>
                     </div>
                   </div>

@@ -106,28 +106,28 @@ export const Intelligence: React.FC = () => {
       <div className="kpi-grid">
         <StatCard
           label="MTTR (Mean Time to Resolve)"
-          value={`${metrics.meanTimeToResolveMinutes.toFixed(0)} min`}
+          value={`${(metrics.meanTimeToResolveMinutes ?? 0).toFixed(0)} min`}
           variant="accent"
           icon={<Clock size={18} />}
           subtext="Target: < 45 min"
         />
         <StatCard
           label="MTTD (Mean Time to Detect)"
-          value={`${metrics.meanTimeToDetectMinutes.toFixed(0)} min`}
+          value={`${(metrics.meanTimeToDetectMinutes ?? 0).toFixed(0)} min`}
           variant="healthy"
           icon={<Clock size={18} />}
           subtext="Target: < 15 min"
         />
         <StatCard
           label="Recurrence Rate"
-          value={`${metrics.recurrenceRatePercentage.toFixed(1)}%`}
-          variant={metrics.recurrenceRatePercentage > 20 ? 'warning' : 'healthy'}
+          value={`${((metrics.recurrenceRatePercentage ?? (metrics as any).recurrenceRate ?? 0)).toFixed(1)}%`}
+          variant={((metrics.recurrenceRatePercentage ?? (metrics as any).recurrenceRate ?? 0)) > 20 ? 'warning' : 'healthy'}
           icon={<TrendingUp size={18} />}
           subtext="Repeated failure patterns"
         />
         <StatCard
           label="Resolved Incidents"
-          value={`${metrics.resolvedIncidents} / ${metrics.totalIncidents}`}
+          value={`${metrics.resolvedIncidents ?? 0} / ${metrics.totalIncidents ?? 0}`}
           variant="healthy"
           icon={<CheckCircle size={18} />}
           subtext="30-day resolution rate"
@@ -195,7 +195,7 @@ export const Intelligence: React.FC = () => {
                     {c.patternDescription}
                   </p>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>
-                    <strong>Shared Symptoms:</strong> {c.sharedSymptoms?.join(', ')}
+                    <strong>Shared Symptoms:</strong> {Array.isArray(c.sharedSymptoms) ? c.sharedSymptoms.join(', ') : String(c.sharedSymptoms || '')}
                   </div>
                   <div style={{ padding: '6px 10px', backgroundColor: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', fontSize: '11px', color: '#93c5fd' }}>
                     <strong>SRE Action:</strong> {c.suggestedAction}

@@ -234,7 +234,11 @@ export const Incidents: React.FC = () => {
                         <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{inc.environment}</span>
                       </td>
                       <td>
-                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{inc.createdBy}</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                          {typeof inc.createdBy === 'object' && inc.createdBy !== null
+                            ? ((inc.createdBy as any).name || `${(inc.createdBy as any).firstName || ''} ${(inc.createdBy as any).lastName || ''}`.trim() || (inc.createdBy as any).email || 'System')
+                            : String(inc.createdBy || 'System')}
+                        </span>
                       </td>
                       <td>
                         <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
